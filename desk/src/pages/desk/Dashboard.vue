@@ -2,7 +2,7 @@
 	<div class="flex flex-col h-screen">
 		<div class="flex border-b h-[52px] px-[24px] shrink-0">
 			<div class="grow my-auto ml-2.5 text-[16px] text-gray-900">
-				Welcome, {{ user }}
+				Welcome, {{ user.agent ? user.agent.agent_name : user.user }}
 			</div>
 		</div>
 		<div class="overflow-y-scroll h-full">
@@ -57,6 +57,7 @@ import TicketSummaryChart from "@/components/desk/dashboard/TicketSummaryChart.v
 import CustomerSatisfactionChart from "@/components/desk/dashboard/CustomerSatisfactionChart.vue"
 import SlaSummaryCards from "@/components/desk/dashboard/SlaSummaryCards.vue"
 import CustomIcons from "@/components/desk/global/CustomIcons.vue"
+import { onMounted, ref, inject } from "vue"
 export default {
 	name: "Dashboard",
 	components: {
@@ -69,20 +70,31 @@ export default {
 		SlaSummaryCards,
 		CustomIcons,
 	},
+
 	data() {
-		let date = {}
 		let fromDate = ""
 		let toDate = ""
+
 		return {
-			date,
 			fromDate,
 			toDate,
 		}
 	},
-	computed: {
-		user() {
-			return this.$resources.getSessionUser.data
-		},
+
+	setup() {
+		const date = ref()
+		onMounted(() => {
+			const startDate = new Date().setDate(new Date().getDate() - 7)
+			const endDate = new Date()
+			date.value = [startDate, endDate]
+		})
+
+		const user = inject("user")
+
+		return {
+			date,
+			user,
+		}
 	},
 	methods: {
 		onDateChange(selectedDates) {
@@ -110,18 +122,9 @@ export default {
 			this.toDate = this.toDate.split("/").reverse().join("-")
 		},
 	},
-	resources: {
-		getSessionUser() {
-			return {
-				method: "frappedesk.api.general.get_session_user",
-				auto: true,
-			}
-		},
-	},
 	beforeMount() {
 		const startDate = new Date().setDate(new Date().getDate() - 7)
 		const endDate = new Date()
-		this.date.value = [startDate, endDate]
 		this.fromDate = startDate
 		this.fromDate = new Date(startDate).toLocaleDateString("en-IN", {
 			year: "numeric",
