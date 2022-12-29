@@ -15,6 +15,7 @@
 						@update:modelValue="handleDate"
 						:enable-time-picker="false"
 						format="MMM dd"
+						v-on:date-change="onDateChange"
 					/>
 				</div>
 			</div>
@@ -48,7 +49,8 @@
 <script>
 import TicketStatusCards from "@/components/desk/dashboard/TicketStatusCards.vue"
 import TicketTrendsChart from "@/components/desk/dashboard/TicketTrendsChart.vue"
-import Datepicker from "@vuepic/vue-datepicker"
+// import Datepicker from "@vuepic/vue-datepicker"
+import Datepicker from "@/components/desk/global/Datepicker.vue"
 import "@vuepic/vue-datepicker/dist/main.css"
 import TicketTypeChart from "@//components/desk/dashboard/TicketTypeChart.vue"
 import TicketSummaryChart from "@/components/desk/dashboard/TicketSummaryChart.vue"
@@ -83,6 +85,9 @@ export default {
 		},
 	},
 	methods: {
+		onDateChange(selectedDates) {
+			console.log("date changed");
+		},
 		handleDate(modelData) {
 			this.date.value = modelData
 			this.fromDate = new Date(this.date.value[0]).toLocaleDateString(
