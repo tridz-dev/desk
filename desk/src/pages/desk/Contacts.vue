@@ -5,6 +5,8 @@
 			:options="{
 				cache: ['Contacts', 'Desk'],
 				doctype: 'Contact',
+				urlQueryFilters: true,
+				saveFiltersLocally: true,
 				fields: [
 					'first_name',
 					'last_name',
@@ -19,6 +21,8 @@
 				<ListViewer
 					:options="{
 						base: '12',
+						filterBox: true,
+						presetFilters: true,
 						presetFilters: true,
 						fields: {
 							first_name: {
@@ -49,9 +53,25 @@
 					<template #field-first_name="{ row }">
 						<router-link
 							:to="{ path: `/frappedesk/contacts/${row.name}` }"
+							class="text-[13px] text-gray-600 font-inter hover:text-gray-900"
 						>
 							{{ row.first_name || "" }} {{ row.last_name || "" }}
 						</router-link>
+					</template>
+					<template #field-email="{ row }">
+						<div class="text-[13px] font-inter text-gray-600">
+							{{ row.email }}
+						</div>
+					</template>
+					<template #field-phone="{ row }">
+						<div class="text-[13px] font-inter text-gray-600">
+							{{ row.phone }}
+						</div>
+					</template>
+					<template #field-customer="{ row }">
+						<div class="text-[13px] font-inter text-gray-600">
+							{{ row.customer }}
+						</div>
 					</template>
 				</ListViewer>
 			</template>
