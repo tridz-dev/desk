@@ -1,29 +1,69 @@
 <template>
-	<div class="mt-[9px]">
+	<div class="flex flex-col px-4">
 		<ListManager
 			ref="listManager"
-			class="px-[16px]"
 			:options="{
 				cache: ['Agents', 'Desk'],
 				doctype: 'Agent',
 				fields: ['user as email', 'user.full_name as full_name'],
 				limit: 20,
+				
 			}"
-			@selection="
-				(selectedItems) => {
-					if (Object.keys(selectedItems).length > 0) {
-						$event.emit(
-							'show-top-panel-actions-settings',
-							'Agents Bulk'
-						)
-					} else {
-						$event.emit('show-top-panel-actions-settings', 'Agents')
-					}
-				}
-			"
 		>
 			<template #body="{ manager }">
-				<AgentList :manager="manager" />
+				<ListViewer
+					:options="{
+						name: 'Agent',
+						base: '12',
+						listTitle: 'Agents',
+						presetFilters: true,
+						fields: {
+							full_name: { label: 'Name', width: '4' },
+							email: {
+								label: 'Email',
+								width: '2',
+							},
+						},
+					}"
+					class="text-base h-[calc(100vh-9.5rem)] pt-4"
+					@add-item="
+						() => {
+							showNewAgentDialog = true
+						}
+					"
+				>
+					<template #field-full_name="{ row }">
+						<router-link
+							:to="{
+								path: `/frappedesk/settings/agents/${row.email}`,
+							}"
+						>
+							{{ `${row.full_name}` }}
+						</router-link>
+					</template>
+					<template #bulk-actions="{ selectedItems }">
+						<div class="flex flex-row space-x-2">
+							<Button
+								@click="
+									() => {
+										$resources.deleteTeam
+											.submit({
+												doctype: 'Agent Group',
+												name: Object.keys(
+													selectedItems
+												),
+											})
+											.then(() => {
+												manager.unselect()
+												manager.reload()
+											})
+									}
+								"
+								>Delete</Button
+							>
+						</div>
+					</template>
+				</ListViewer>
 			</template>
 		</ListManager>
 		<AddNewAgentsDialog
@@ -43,6 +83,7 @@ import { inject, ref } from "vue"
 import AgentList from "@/components/desk/settings/agents/AgentList.vue"
 import ListManager from "@/components/global/ListManager.vue"
 import AddNewAgentsDialog from "@/components/desk/global/AddNewAgentsDialog.vue"
+import ListViewer from "@/components/global/ListViewer.vue"
 
 export default {
 	name: "Agents",
@@ -50,6 +91,7 @@ export default {
 		AgentList,
 		ListManager,
 		AddNewAgentsDialog,
+		ListViewer,
 	},
 	setup() {
 		const viewportWidth = inject("viewportWidth")
