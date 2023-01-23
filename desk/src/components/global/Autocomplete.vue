@@ -117,6 +117,12 @@
 						v-if="filteredOptions?.length == 0"
 						name="no-result-found"
 					>
+						<a
+							v-if="doctype"
+							class="cursor-pointer grow text-base text-gray-600"
+							@click="newDocument(path)"
+							>create new "{{ query }}" {{ doctype }}</a
+						>
 						<li
 							class="px-2.5 py-1.5 rounded-md text-base text-gray-600"
 						>
@@ -168,6 +174,12 @@ export default {
 		show: {
 			type: Boolean,
 			default: false,
+		},
+		doctype: {
+			type: String,
+		},
+		path: {
+			type: String,
 		},
 	},
 	emits: ["update:modelValue", "change"],
@@ -241,6 +253,9 @@ export default {
 		search(query) {
 			if (!this.searchable) return
 			this.$resources.search.fetch(this.resourceOptions.inputMap(query))
+		},
+		newDocument(path) {
+			this.$router.push({ path: path })
 		},
 	},
 	watch: {

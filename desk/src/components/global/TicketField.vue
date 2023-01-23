@@ -22,6 +22,8 @@
 			<Autocomplete
 				v-else
 				:placeholder="`Select ${fieldMetaInfo?.label.toLowerCase()}`"
+				:doctype="`${fieldMetaInfo?.label.toLowerCase()}`"
+				:path="path"
 				class="rounded-md"
 				:class="{
 					'border-red-500 border': triggerValidationError,
@@ -74,6 +76,11 @@ export default {
 		Autocomplete,
 	},
 	computed: {
+		path() {
+			if (this.fieldMetaInfo?.label == "Ticket Type") {
+				return "/frappedesk/settings/ticket_types/new"
+			}
+		},
 		ticket() {
 			return this.$resources.ticket.doc || null
 		},
