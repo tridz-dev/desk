@@ -117,6 +117,13 @@
 						v-if="filteredOptions?.length == 0"
 						name="no-result-found"
 					>
+						<div >
+							<a
+								@click="dialog()"
+								class="cursor-pointer grow text-base text-gray-600"
+								>create new "{{ query }}" {{ doctype }}</a
+							>
+						</div>
 						<li
 							class="px-2.5 py-1.5 rounded-md text-base text-gray-600"
 						>
@@ -169,6 +176,13 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		doctype: {
+			type: String,
+		},
+		showDialog: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	emits: ["update:modelValue", "change"],
 	components: {
@@ -179,6 +193,15 @@ export default {
 		ComboboxOptions,
 		ComboboxOption,
 		ComboboxButton,
+	},
+	setup(props) {
+		const showPopover = false
+		const notFound = props.show
+
+		return {
+			showPopover,
+			notFound,
+		}
 	},
 	data() {
 		return {
@@ -241,6 +264,13 @@ export default {
 		search(query) {
 			if (!this.searchable) return
 			this.$resources.search.fetch(this.resourceOptions.inputMap(query))
+		},
+		dialog() {
+			// console.log(!this.showDialog, "dialog")
+			this.$emit("newDialog", {
+				dialog: !this.showDialog,
+				query: this.query,
+			})
 		},
 	},
 	watch: {

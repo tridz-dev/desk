@@ -22,7 +22,14 @@
 			<Autocomplete
 				v-else
 				:placeholder="`Select ${fieldMetaInfo?.label.toLowerCase()}`"
+				:doctype="`${fieldMetaInfo?.label.toLowerCase()}`"
 				class="rounded-md"
+				:show="show"
+				@newDialog="
+					($event) => {
+						dialog($event.dialog, $event.query)
+					}
+				"
 				:class="{
 					'border-red-500 border': triggerValidationError,
 				}"
@@ -36,12 +43,22 @@
 				:searchable="editable"
 			/>
 		</div>
+		<NewTicketTypeDialog
+			v-model="showNewTicketTypeDialog"
+			:title="query"
+			@close="
+				() => {
+					showNewTicketTypeDialog = false
+				}
+			"
+		/>
 	</div>
 </template>
 
 <script>
 import Autocomplete from "@/components/global/Autocomplete.vue"
-import { inject, computed } from "vue"
+import NewTicketTypeDialog from "@/components/desk/global/NewTicketTypeDialog.vue"
+import { ref, inject, computed } from "vue"
 
 export default {
 	name: "TicketField",
@@ -70,12 +87,33 @@ export default {
 		},
 		// TODO: use a prop to trigger mandatory field validation errors: use case (ticket type should be set before changing ticket status)
 	},
+	setup() {
+		const showNewTicketTypeDialog = ref(false)
+		const show = ref(false)
+		const showDialog = ref(false)
+		return {
+			showNewTicketTypeDialog,
+			show,
+			showDialog,
+		}
+	},
+	data() {
+		return {
+			query: "",
+		}
+	},
 	components: {
 		Autocomplete,
+		NewTicketTypeDialog,
 	},
 	computed: {
 		ticket() {
 			return this.$resources.ticket.doc || null
+		},
+		showFound() {
+			if (this.fieldMetaInfo?.label == "Ticket Type") {
+				this.show = true
+			}
 		},
 		fieldMetaInfo() {
 			return this.$resources.fieldMetaInfo.data || null
@@ -167,6 +205,12 @@ export default {
 		},
 	},
 	methods: {
+		dialog(dialog, query) {
+			if (this.fieldMetaInfo?.label == "Ticket Type") {
+				this.showNewTicketTypeDialog = dialog
+				this.query = query
+			}
+		},
 		onInput(value) {
 			if (this.validate()) {
 				if (this.fieldname == "_assign") {
