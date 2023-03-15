@@ -320,7 +320,7 @@
 												class="[&:nth-child(2)]:rounded-l-none"
 												:loading="
 													editingType == 'reply'
-														? $resources.submitConversation.loading
+														? $resources.submitGmail.loading
 														: $resources.submitComment.loading
 												"
 												appearance="primary"
@@ -587,7 +587,11 @@ export default {
 				},
 			};
 		},
-		//TODO: gmail_api
+		sendGmail(){
+			return {
+				url:'gmail_rest.send_email.gmail_send_message'
+			}
+		},
 		submitComment() {
 			return {
 				url: "frappe.client.insert",
@@ -731,12 +735,22 @@ export default {
 			// }
 			switch (this.editingType) {
 				case "reply":
-					this.submitConversation();
+					this.submitGmail();
 					break;
 				case "comment":
 					this.submitComment();
 					break;
 			}
+		},
+		sendGmail(){
+			this.tempTextEditorData.content = this.content;
+			const content = `<div class='content-block'><div>${this.content}</div></div>`;
+			this.$resources.sendGmail.submit({
+				ticket_id: this.ticketId,
+				content: content,
+				cc: this.cc,
+				bcc: this.bcc,
+			})
 		},
 		submitConversation() {
 			this.tempTextEditorData.content = this.content;

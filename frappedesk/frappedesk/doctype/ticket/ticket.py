@@ -361,7 +361,7 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 			["default_outgoing", "=", 1],
 		],
 	)
-	default_outgoing_email_account = frappe.get_value(
+	default_outgoing_email_account = frappe.get_value( 
 		"Email Account", [["Email Account", "default_outgoing", "=", 1]]
 	)
 
