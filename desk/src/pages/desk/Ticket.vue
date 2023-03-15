@@ -318,11 +318,6 @@
 											/>
 											<Button
 												class="[&:nth-child(2)]:rounded-l-none"
-												:loading="
-													editingType == 'reply'
-														? $resources.submitGmail.loading
-														: $resources.submitComment.loading
-												"
 												appearance="primary"
 												:disabled="
 													(!user.agent && !user.isAdmin) || sendingDissabled
@@ -345,9 +340,7 @@
 												"
 											/>
 											<FileUploader @success="(file) => attachments.push(file)">
-												<template
-													#default="{ progress, uploading, openFileSelector }"
-												>
+												<template #default="{ uploading, openFileSelector }">
 													<FeatherIcon
 														name="paperclip"
 														class="h-[17px]"
@@ -442,10 +435,7 @@
 <script>
 import {
 	ErrorMessage,
-	Badge,
-	Card,
 	Dropdown,
-	Avatar,
 	FileUploader,
 	FeatherIcon,
 	TextEditor,
@@ -460,15 +450,11 @@ import CannedResponsesDialog from "@/components/desk/global/CannedResponsesDialo
 import ArticleResponseDialog from "@/components/desk/global/ArticleResponseDialog.vue";
 import { inject, ref } from "vue";
 import TicketStatus from "@/components/global/ticket_list_item/TicketStatus.vue";
-import { color } from "echarts";
 
 export default {
 	name: "Ticket",
 	components: {
-		Badge,
-		Card,
 		Dropdown,
-		Avatar,
 		FileUploader,
 		FeatherIcon,
 		TextEditor,
@@ -518,7 +504,6 @@ export default {
 			showArticleResponseDialog,
 			tempContent,
 			editingSubject,
-			replied,
 			ccValidationError,
 			bccValidationError,
 			showCc,
@@ -550,47 +535,47 @@ export default {
 				url: "frappedesk.api.ticket.update_ticket_status",
 			};
 		},
-		submitConversation() {
+		// submitConversation() {
+		// 	return {
+		// 		url: "frappedesk.api.ticket.submit_conversation_via_agent",
+		// 		onSuccess: (res) => {
+		// 			if (res.status == "error") {
+		// 				const error = {
+		// 					"No default outgoing email available": {
+		// 						title: "Email not sent",
+		// 						text: "No default outgoing email available",
+		// 					},
+		// 				}[res.error_code];
+		// 				this.$toast({
+		// 					title: error.title,
+		// 					text: error.text,
+		// 					icon: "mail",
+		// 					iconClasses: "text-red-500",
+		// 					buttons: [
+		// 						{
+		// 							title: "Setup now",
+		// 							appearance: "primary",
+		// 							iconRight: "arrow-right",
+		// 							onClick: () => {
+		// 								this.$router.push({ name: "Emails" });
+		// 							},
+		// 						},
+		// 					],
+		// 				});
+		// 			}
+		// 			this.tempTextEditorData = {};
+		// 			this.editing = false;
+		// 		},
+		// 		onError: () => {
+		// 			this.content = this.tempTextEditorData.content;
+		// 			this.attachments = this.tempTextEditorData.attachments;
+		// 		},
+		// 	};
+		// },
+		sendGmail() {
 			return {
-				url: "frappedesk.api.ticket.submit_conversation_via_agent",
-				onSuccess: (res) => {
-					if (res.status == "error") {
-						const error = {
-							"No default outgoing email available": {
-								title: "Email not sent",
-								text: "No default outgoing email available",
-							},
-						}[res.error_code];
-						this.$toast({
-							title: error.title,
-							text: error.text,
-							icon: "mail",
-							iconClasses: "text-red-500",
-							buttons: [
-								{
-									title: "Setup now",
-									appearance: "primary",
-									iconRight: "arrow-right",
-									onClick: () => {
-										this.$router.push({ name: "Emails" });
-									},
-								},
-							],
-						});
-					}
-					this.tempTextEditorData = {};
-					this.editing = false;
-				},
-				onError: () => {
-					this.content = this.tempTextEditorData.content;
-					this.attachments = this.tempTextEditorData.attachments;
-				},
+				url: "gmail_rest.send_email.gmail_send_message",
 			};
-		},
-		sendGmail(){
-			return {
-				url:'gmail_rest.send_email.gmail_send_message'
-			}
 		},
 		submitComment() {
 			return {
@@ -690,8 +675,7 @@ export default {
 				textArea.select();
 				try {
 					document.execCommand("copy");
-				} catch (err) {
-				}
+				} catch (err) {}
 				document.body.removeChild(textArea);
 			}
 			this.$toast({
@@ -735,14 +719,14 @@ export default {
 			// }
 			switch (this.editingType) {
 				case "reply":
-					this.submitGmail();
+					this.sendGmail();
 					break;
 				case "comment":
 					this.submitComment();
 					break;
 			}
 		},
-		sendGmail(){
+		sendGmail() {
 			this.tempTextEditorData.content = this.content;
 			const content = `<div class='content-block'><div>${this.content}</div></div>`;
 			this.$resources.sendGmail.submit({
@@ -750,41 +734,41 @@ export default {
 				content: content,
 				cc: this.cc,
 				bcc: this.bcc,
-			})
-		},
-		submitConversation() {
-			this.tempTextEditorData.content = this.content;
-			this.tempTextEditorData.attachments = this.attachments;
-			const content = `<div class='content-block'><div>${this.content}</div></div>`;
-			this.$resources.submitConversation.submit({
-				ticket_id: this.ticketId,
-				message: content,
-				cc: this.cc,
-				bcc: this.bcc,
-				attachments: this.attachments.map((x) => x.name),
 			});
-			this.content = "";
-			this.attachments = [];
 		},
+		// submitConversation() {
+		// 	this.tempTextEditorData.content = this.content;
+		// 	this.tempTextEditorData.attachments = this.attachments;
+		// 	const content = `<div class='content-block'><div>${this.content}</div></div>`;
+		// 	this.$resources.submitConversation.submit({
+		// 		ticket_id: this.ticketId,
+		// 		message: content,
+		// 		cc: this.cc,
+		// 		bcc: this.bcc,
+		// 		attachments: this.attachments.map((x) => x.name),
+		// 	});
+		// 	this.content = "";
+		// 	this.attachments = [];
+		// },
 		submitAndUpdateTicketStatus(status) {
 			this.$resources.submitAndUpdateTicketStatus.submit({
 				ticket_id: this.ticketId,
 				status: status,
 			});
 		},
-		submitResolvedTicket() {
-			this.tempTextEditorData.content = this.content;
-			this.tempTextEditorData.attachments = this.attachments;
-			const content = `<div class='content-block'><div>${this.content}</div></div>`;
-			this.$resources.submitConversation.submit({
-				ticket_id: this.ticketId,
-				message: content,
-				status: "Resolved",
-				attachments: this.attachments.map((x) => x.name),
-			});
-			this.content = "";
-			this.attachments = [];
-		},
+		// submitResolvedTicket() {
+		// 	this.tempTextEditorData.content = this.content;
+		// 	this.tempTextEditorData.attachments = this.attachments;
+		// 	const content = `<div class='content-block'><div>${this.content}</div></div>`;
+		// 	this.$resources.submitConversation.submit({
+		// 		ticket_id: this.ticketId,
+		// 		message: content,
+		// 		status: "Resolved",
+		// 		attachments: this.attachments.map((x) => x.name),
+		// 	});
+		// 	this.content = "";
+		// 	this.attachments = [];
+		// },
 		submitComment() {
 			this.tempTextEditorData.attachments = this.attachments;
 			this.tempTextEditorData.content = this.content;
