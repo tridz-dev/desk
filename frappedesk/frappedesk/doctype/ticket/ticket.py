@@ -17,6 +17,7 @@ from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import date_diff, get_datetime, now_datetime, time_diff_in_seconds
 from frappe.utils.user import is_website_user
+from gmail_rest.send_email import gmail_send_message
 
 from frappedesk.frappedesk.doctype.ticket_activity.ticket_activity import (
 	log_ticket_activity,
@@ -463,6 +464,13 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 				"Either setup up support email account or there should be a default"
 				" outgoing email account"
 			)
+	elif not sent_email:
+		try:
+			gmail_send_message(
+				ticket_doc.name,message,cc,bcc
+			)
+		except:
+			return {"status": "error", "error_code": "No gmail api configured"}
 	else:
 		return {"status": "error", "error_code": "No default outgoing email available"}
 	return {
