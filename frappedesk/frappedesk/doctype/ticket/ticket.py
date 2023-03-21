@@ -463,7 +463,7 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 		except:
 			pass
 
-	elif  sent_via_gmail_api==True:
+	if  sent_via_gmail_api==True:
 		try:
 			gmail_send_message(
 				ticket_doc.name, message,cc,bcc
