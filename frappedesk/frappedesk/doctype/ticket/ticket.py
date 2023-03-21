@@ -461,10 +461,19 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 				now=False,
 			)
 		except:
-			frappe.throw(
-				"Either setup up support email account or there should be a default"
-				" outgoing email account"
+			pass
+
+	elif not sent_email:
+		try:
+			gmail_send_message(
+				ticket_doc.name, message,cc,bcc
 			)
+		except:
+			pass
+			# frappe.throw(
+			# 	"Either setup up support email account or there should be a default"
+			# 	" outgoing email account"
+			# )
 	# elif sent_via_gmail_api:
 	# 	try:
 	# 		gmail_send_message(
@@ -473,12 +482,7 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 	# 	except:
 	# 		return {"status": "error", "error_code": "No gmail api configured"}
 	else:
-		try:
-			gmail_send_message(
-				ticket_doc.name,message,cc,bcc
-			)
-		except:
-			return {"status": "error", "error_code": "No gmail api configured"}
+		return {"status": "error", "error_code": "No gmail api configured or configure an email account	"}
 	return {
 		"status": "success",
 	}
