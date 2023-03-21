@@ -554,6 +554,7 @@ export default {
 			return {
 				url: "frappedesk.api.ticket.submit_conversation_via_agent",
 				onSuccess: (res) => {
+					console.log(res,"rererer")
 					if (res.status == "error") {
 						const error = {
 							"No default outgoing email available": {
