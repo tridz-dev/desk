@@ -346,6 +346,7 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 	)
 
 	sent_email = True  # if not set email will not be sent
+	sent_via_gmail_api= True
 	reply_email_account = None
 
 	ticket_email_account = (
@@ -464,7 +465,7 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 				"Either setup up support email account or there should be a default"
 				" outgoing email account"
 			)
-	elif not sent_email:
+	elif sent_via_gmail_api:
 		try:
 			gmail_send_message(
 				ticket_doc.name,message,cc,bcc
