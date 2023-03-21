@@ -318,6 +318,11 @@
 											/>
 											<Button
 												class="[&:nth-child(2)]:rounded-l-none"
+												:loading="
+													editingType == 'reply'
+														? $resources.submitConversation.loading
+														: $resources.submitComment.loading
+												"
 												appearance="primary"
 												:disabled="
 													(!user.agent && !user.isAdmin) || sendingDissabled
