@@ -465,15 +465,20 @@ def create_communication_via_agent(ticket, message, cc, bcc, attachments=None):
 				"Either setup up support email account or there should be a default"
 				" outgoing email account"
 			)
-	elif sent_via_gmail_api:
+	# elif sent_via_gmail_api:
+	# 	try:
+	# 		gmail_send_message(
+	# 			ticket_doc.name,message,cc,bcc
+	# 		)
+	# 	except:
+	# 		return {"status": "error", "error_code": "No gmail api configured"}
+	else:
 		try:
 			gmail_send_message(
 				ticket_doc.name,message,cc,bcc
 			)
 		except:
 			return {"status": "error", "error_code": "No gmail api configured"}
-	else:
-		return {"status": "error", "error_code": "No default outgoing email available"}
 	return {
 		"status": "success",
 	}
