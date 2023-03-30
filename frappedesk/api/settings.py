@@ -17,3 +17,13 @@ def skip_helpdesk_name_setup():
 	doc.save(ignore_permissions=True)
 
 	return doc
+
+@frappe.whitelist()
+def get_system_settings():
+	doc = frappe.get_doc('System Settings')
+	return doc
+
+@frappe.whitelist(allow_guest=True)
+def last_created_user():
+	doc = frappe.get_last_doc('User')
+	return doc
