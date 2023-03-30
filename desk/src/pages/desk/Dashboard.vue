@@ -31,18 +31,20 @@
 			</div>
 			<SlaSummaryCards />
 		</div>
+		<SystemSettingsDialog :v-model="showSettingsDialog" />
 	</div>
 </template>
 
 <script>
-import TicketStatusCards from "@/components/desk/dashboard/TicketStatusCards.vue"
-import TicketTrendsChart from "@/components/desk/dashboard/TicketTrendsChart.vue"
-import TicketTypeChart from "@//components/desk/dashboard/TicketTypeChart.vue"
-import TicketSummaryChart from "@/components/desk/dashboard/TicketSummaryChart.vue"
-import CustomerSatisfactionChart from "@/components/desk/dashboard/CustomerSatisfactionChart.vue"
-import SlaSummaryCards from "@/components/desk/dashboard/SlaSummaryCards.vue"
-import CustomIcons from "@/components/desk/global/CustomIcons.vue"
-import { onMounted, ref, inject } from "vue"
+import TicketStatusCards from "@/components/desk/dashboard/TicketStatusCards.vue";
+import TicketTrendsChart from "@/components/desk/dashboard/TicketTrendsChart.vue";
+import TicketTypeChart from "@//components/desk/dashboard/TicketTypeChart.vue";
+import TicketSummaryChart from "@/components/desk/dashboard/TicketSummaryChart.vue";
+import CustomerSatisfactionChart from "@/components/desk/dashboard/CustomerSatisfactionChart.vue";
+import SlaSummaryCards from "@/components/desk/dashboard/SlaSummaryCards.vue";
+import SystemSettingsDialog from "@/components/desk/global/SystemSettingsDialog.vue";
+import CustomIcons from "@/components/desk/global/CustomIcons.vue";
+import { onMounted, ref, inject } from "vue";
 export default {
 	name: "Dashboard",
 	components: {
@@ -53,75 +55,72 @@ export default {
 		CustomerSatisfactionChart,
 		SlaSummaryCards,
 		CustomIcons,
+		SystemSettingsDialog,
 	},
 
 	data() {
-		let fromDate = ""
-		let toDate = ""
+		let fromDate = "";
+		let toDate = "";
+		let showSettingsDialog = true;
 
 		return {
 			fromDate,
 			toDate,
-		}
+			showSettingsDialog,
+		};
 	},
 
 	setup() {
-		const date = ref()
+		const date = ref();
 		onMounted(() => {
-			const startDate = new Date().setDate(new Date().getDate() - 7)
-			const endDate = new Date()
-			date.value = [startDate, endDate]
-		})
+			const startDate = new Date().setDate(new Date().getDate() - 7);
+			const endDate = new Date();
+			date.value = [startDate, endDate];
+		});
 
-		const user = inject("user")
+		const user = inject("user");
 
 		return {
 			date,
 			user,
-		}
+		};
 	},
 	methods: {
 		handleDate(modelData) {
-			this.date.value = modelData
-			this.fromDate = new Date(this.date.value[0]).toLocaleDateString(
-				"en-IN",
-				{
-					year: "numeric",
-					month: "2-digit",
-					day: "2-digit",
-				}
-			)
-			this.fromDate = this.fromDate.split("/").reverse().join("-")
-			this.toDate = new Date(this.date.value[1]).toLocaleDateString(
-				"en-IN",
-				{
-					year: "numeric",
-					month: "2-digit",
-					day: "2-digit",
-				}
-			)
-			this.toDate = this.toDate.split("/").reverse().join("-")
+			this.date.value = modelData;
+			this.fromDate = new Date(this.date.value[0]).toLocaleDateString("en-IN", {
+				year: "numeric",
+				month: "2-digit",
+				day: "2-digit",
+			});
+			this.fromDate = this.fromDate.split("/").reverse().join("-");
+			this.toDate = new Date(this.date.value[1]).toLocaleDateString("en-IN", {
+				year: "numeric",
+				month: "2-digit",
+				day: "2-digit",
+			});
+			this.toDate = this.toDate.split("/").reverse().join("-");
 		},
 	},
 	beforeMount() {
-		const startDate = new Date().setDate(new Date().getDate() - 7)
-		const endDate = new Date()
-		this.fromDate = startDate
+		const startDate = new Date().setDate(new Date().getDate() - 7);
+		const endDate = new Date();
+		this.fromDate = startDate;
 		this.fromDate = new Date(startDate).toLocaleDateString("en-IN", {
 			year: "numeric",
 			month: "2-digit",
 			day: "2-digit",
-		})
-		this.fromDate = this.fromDate.split("/").reverse().join("-")
-		this.toDate = endDate
+		});
+		this.fromDate = this.fromDate.split("/").reverse().join("-");
+		this.toDate = endDate;
 		this.toDate = new Date(endDate).toLocaleDateString("en-IN", {
 			year: "numeric",
 			month: "2-digit",
 			day: "2-digit",
-		})
-		this.toDate = this.toDate.split("/").reverse().join("-")
+		});
+		this.toDate = this.toDate.split("/").reverse().join("-");
 	},
-}
+};
 </script>
 
 <style>
