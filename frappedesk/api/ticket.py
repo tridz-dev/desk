@@ -9,6 +9,7 @@ from frappedesk.frappedesk.doctype.ticket.ticket import (
 	create_communication_via_contact,
 	get_all_conversations,
 	create_communication_via_agent,
+	create_communication_via_email_api
 )
 from frappe.desk.form.assign_to import clear as clear_all_assignments
 from frappe.utils import datetime
@@ -464,7 +465,6 @@ def get_conversations(ticket_id):
 def submit_conversation_via_agent(ticket_id, message,cc,bcc, attachments):
 	return create_communication_via_agent(ticket_id, message,cc,bcc, attachments)
 
-
 @frappe.whitelist()
 def submit_conversation_via_contact(ticket_id, message, attachments):
 	return create_communication_via_contact(ticket_id, message, attachments)
@@ -576,3 +576,7 @@ def get_custom_fields(view="Customer Portal"):
 @frappe.whitelist()
 def get_assignee(ticket_id):
 	return frappe.get_doc("Ticket", ticket_id).get_assigned_agent()
+
+@frappe.whitelist()
+def reply_ticket_via_email_api(ticket_id, message):
+	return create_communication_via_email_api(ticket_id, message)

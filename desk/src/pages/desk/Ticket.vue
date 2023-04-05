@@ -552,7 +552,7 @@ export default {
 		},
 		submitConversation() {
 			return {
-				url: "frappedesk.api.ticket.submit_conversation_via_agent",
+				url: "frappedesk.api.ticket.reply_ticket_via_email_api",
 				onSuccess: (res) => {
 					if (res.status == "error") {
 						const error = {
@@ -744,9 +744,6 @@ export default {
 			this.$resources.submitConversation.submit({
 				ticket_id: this.ticketId,
 				message: content,
-				cc: this.cc,
-				bcc: this.bcc,
-				attachments: this.attachments.map((x) => x.name),
 			});
 			this.content = "";
 			this.attachments = [];

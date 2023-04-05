@@ -21,6 +21,7 @@ from frappe.utils.user import is_website_user
 from frappedesk.frappedesk.doctype.ticket_activity.ticket_activity import (
 	log_ticket_activity,
 )
+from gmail_rest.gmail_rest.email.mail import sendmail
 
 
 class Ticket(Document):
@@ -849,3 +850,53 @@ def get_holidays(holiday_list_name):
 	holiday_list = frappe.get_cached_doc("Service Holiday List", holiday_list_name)
 	holidays = [holiday.holiday_date for holiday in holiday_list.holidays]
 	return holidays
+
+@frappe.whitelist(allow_guest=True)
+def create_communication_via_email_api(ticket, message):
+	ticket_doc = frappe.get_doc("Ticket", ticket)
+	last_ticket_communication_doc = frappe.get_last_doc(
+		"Communication", filters={"reference_name": ["=", ticket_doc.name]}
+	)
+	sent_email = True
+
+	communication = frappe.new_doc("Communication")
+	communication.update(
+		{
+			"communication_type": "Communication",
+			"communication_medium": "Email",
+			"sent_or_received": "Sent",
+			"email_status": "Open",
+			"subject": "Re: " + ticket_doc.subject + f" (#{ticket_doc.name})",
+			"sender": frappe.session.user,
+			"recipients": frappe.get_value("User", "Administrator", "email")
+			if ticket_doc.raised_by == "Administrator"
+			else ticket_doc.raised_by,
+			"content": message,
+			"status": "Linked",
+			"reference_doctype": "Ticket",
+			"reference_name": ticket_doc.name,
+	
+		}
+	)
+
+	email_account = frappe.get_doc('Email Credentials')
+
+	if email_account.service_provider==None:
+		sent_email = False
+	else:
+		sent_email = True
+
+	if sent_email:
+		try:
+			sendmail(
+    			recipients=[ticket_doc.raised_by],
+    			subject=f"Re: {ticket_doc.subject}",
+    			content=message,
+			)
+		except:
+			frappe.throw("Connect to your email via email credential doctype")
+	else:
+		return {"status": "error", "error_code": "Not authorized to any email"}
+	return {
+		"status": "success"
+	}
