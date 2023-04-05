@@ -577,6 +577,6 @@ def get_custom_fields(view="Customer Portal"):
 def get_assignee(ticket_id):
 	return frappe.get_doc("Ticket", ticket_id).get_assigned_agent()
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def reply_ticket_via_email_api(ticket_id, message):
 	return create_communication_via_email_api(ticket_id, message)
