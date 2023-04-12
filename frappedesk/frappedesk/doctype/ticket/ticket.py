@@ -889,7 +889,7 @@ def create_communication_via_email_api(ticket, message):
 	if sent_email:
 		try:
 			sendmail(
-				name=ticket_doc.name
+				name=ticket_doc.name,
     			recipients=ticket_doc.raised_by,
     			subject=f"Re: {ticket_doc.subject}",
     			content=message,
