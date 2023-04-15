@@ -7,10 +7,9 @@
 						<div
 							@click="
 								() => {
-									editingName = true
+									editingName = true;
 									if (!isNew) {
-										tempEmailAccountName =
-											values.emailAccountName
+										tempEmailAccountName = values.emailAccountName;
 									}
 								}
 							"
@@ -25,10 +24,7 @@
 								</div>
 								<FeatherIcon class="w-3 h-3" name="edit" />
 							</div>
-							<div
-								v-else
-								class="flex space-x-2 max-w-sm items-center w-full"
-							>
+							<div v-else class="flex space-x-2 max-w-sm items-center w-full">
 								<Input
 									label="Email Account name"
 									class="grow"
@@ -43,9 +39,8 @@
 									name="x"
 									@click="
 										() => {
-											editingName = false
-											tempEmailAccountName =
-												values.emailAccountName
+											editingName = false;
+											tempEmailAccountName = values.emailAccountName;
 										}
 									"
 								/>
@@ -55,20 +50,50 @@
 					</div>
 					<div>
 						<div class="flex space-x-2 items-center">
-							<div class="text-base font-semibold">
-								Email Setup
+							<div class="text-base font-semibold">Email Setup</div>
+						</div>
+						<div class="pt-2 space-y-5 w-full">
+							<span class="block text-sm mb-2 text-gray-700">
+								Use Custom Email Server
+							</span>
+
+							<div
+								class="max-w-sm bg-blue-50 border-blue-500 rounded p-3 border-2 text-base text-gray-700 flex flex-col items-center"
+							>
+								<p class="text-base text-gray-700">
+									Sign in to your email provider to connect your existing
+									support email inbox with helpdesk in one click.
+								</p>
+								<div
+									class="flex flex-row justify-between items-center w-full pt-2.5 m-0"
+								>
+									<button
+										class="flex flex-row justify-between items-center p-1.5 border border-gray-600"
+										role="button"
+									>
+										<img
+											class="h-4 w-4 mr-2.5"
+											src="/src/assets/images/google.png"
+										/>Sign in with Google
+									</button>
+									<button
+										class="flex flex-row justify-between items-center p-1.5 border border-gray-600"
+									>
+										<img
+											class="h-4 w-4 mr-2.5"
+											src="/src/assets/images/microsoft.png"
+										/>
+										Sign in with Microsoft
+									</button>
+								</div>
 							</div>
 						</div>
 						<div class="pt-4 space-y-5 w-full">
 							<div>
-								<span
-									class="block mb-2 text-sm leading-4 text-gray-700"
-								>
-									Service
+								<span class="block mb-2 text-sm leading-4 text-gray-700">
+									Manual Email Setup
 								</span>
-								<div
-									class="flex flex-wrap text-[11px] text-gray-700 mx-[-4px]"
-								>
+								<div class="flex flex-wrap text-[11px] text-gray-700 mx-[-4px]">
 									<div
 										v-for="service in services"
 										:key="service.title"
@@ -81,10 +106,7 @@
 										"
 										@click="selectService(service)"
 									>
-										<Images
-											:name="service.image"
-											class="h-11 w-11"
-										/>
+										<Images :name="service.image" class="h-11 w-11" />
 										<div>{{ service.title }}</div>
 									</div>
 								</div>
@@ -99,15 +121,13 @@
 										class="shrink-0 w-6 h-6 stroke-blue-500 stroke-2"
 									/>
 									<p>
-										GMail will only work if you enable
-										2-step authentication and use
-										app-specific password.
+										GMail will only work if you enable 2-step authentication and
+										use app-specific password.
 										<a
 											href="https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/email/email_account_setup_with_gmail"
 											target="_blank"
 											class="text-blue-500 hover:underline"
-											>Read the step by step guide
-											here.</a
+											>Read the step by step guide here.</a
 										>
 									</p>
 								</div>
@@ -118,9 +138,7 @@
 										name="info"
 										class="shrink-0 w-6 h-6 stroke-blue-500 stroke-2"
 									/>
-									<p>
-										Only unseen emails will be synchronized.
-									</p>
+									<p>Only unseen emails will be synchronized.</p>
 								</div>
 							</div>
 							<Input
@@ -135,17 +153,13 @@
 								@click="
 									() => {
 										if (!isNew) {
-											if (
-												initialPassword ===
-												values.password
-											) {
-												values.password = ''
+											if (initialPassword === values.password) {
+												values.password = '';
 											}
 
 											if (initialPassword === '') {
-												initialPassword =
-													values.password
-												values.password = ''
+												initialPassword = values.password;
+												values.password = '';
 											}
 										}
 									}
@@ -161,27 +175,19 @@
 					</div>
 					<div>
 						<div class="flex space-x-2 items-center">
-							<div class="text-base font-semibold">
-								Properties
-							</div>
+							<div class="text-base font-semibold">Properties</div>
 						</div>
 						<div
 							class="py-4 w-full text-gray-900 text-base flex flex-col space-y-5"
 						>
 							<div class="flex flex-col space-y-2">
-								<div
-									class="flex flex-row w-full mb-2 space-x-10"
-								>
+								<div class="flex flex-row w-full mb-2 space-x-10">
 									<div class="flex flex-row space-x-5">
 										<div>Incoming</div>
-										<CustomSwitch
-											v-model="values.enableIncoming"
-										/>
+										<CustomSwitch v-model="values.enableIncoming" />
 									</div>
 									<div class="flex flex-row space-x-5">
-										<div v-if="values.enableIncoming">
-											Default
-										</div>
+										<div v-if="values.enableIncoming">Default</div>
 										<CustomSwitch
 											v-if="values.enableIncoming"
 											v-model="values.defaultIncoming"
@@ -191,14 +197,10 @@
 								<div class="flex flex-row w-full space-x-10">
 									<div class="flex flex-row space-x-5">
 										<div>Outgoing</div>
-										<CustomSwitch
-											v-model="values.enableOutgoing"
-										/>
+										<CustomSwitch v-model="values.enableOutgoing" />
 									</div>
 									<div class="flex flex-row space-x-5">
-										<div v-if="values.enableOutgoing">
-											Default
-										</div>
+										<div v-if="values.enableOutgoing">Default</div>
 										<CustomSwitch
 											v-if="values.enableOutgoing"
 											v-model="values.defaultOutgoing"
@@ -210,10 +212,8 @@
 								v-if="
 									!values.defaultOutgoing &&
 									!values.enableOutgoing &&
-									!$resources.checkDefaultOutgoingEmailAccount
-										.loading &&
-									$resources.checkDefaultOutgoingEmailAccount
-										.data == 0
+									!$resources.checkDefaultOutgoingEmailAccount.loading &&
+									$resources.checkDefaultOutgoingEmailAccount.data == 0
 								"
 								class="max-w-sm bg-yellow-50 border-yellow-500 rounded p-3 border-2 text-base text-gray-700 flex flex-row space-x-4 items-center"
 							>
@@ -222,8 +222,8 @@
 									class="shrink-0 w-6 h-6 stroke-yellow-500 stroke-2"
 								/>
 								<p>
-									There should be an email account which is
-									marked as default outgoing.
+									There should be an email account which is marked as default
+									outgoing.
 								</p>
 							</div>
 						</div>
@@ -231,14 +231,12 @@
 				</div>
 				<div>
 					<div class="flex flex-row space-x-2 items-center">
-						<Button appearance="secondary" @click="cancel()"
-							>Cancel</Button
-						>
+						<Button appearance="secondary" @click="cancel()">Cancel</Button>
 						<Button
 							appearance="primary"
 							@click="
 								() => {
-									isNew ? create() : save()
+									isNew ? create() : save();
 								}
 							"
 							:loading="
@@ -258,10 +256,10 @@
 </template>
 
 <script>
-import { ref } from "vue"
-import CustomSwitch from "@/components/global/CustomSwitch.vue"
-import Images from "@/components/global/Images.vue"
-import { Input, FeatherIcon, LoadingText } from "frappe-ui"
+import { ref } from "vue";
+import CustomSwitch from "@/components/global/CustomSwitch.vue";
+import Images from "@/components/global/Images.vue";
+import { Input, FeatherIcon, LoadingText, Button } from "frappe-ui";
 
 export default {
 	name: "EmailAccount",
@@ -295,7 +293,7 @@ export default {
 				title: "Others",
 				name: "Others",
 			},
-		])
+		]);
 		const emailDefaults = {
 			GMail: {
 				email_server: "imap.gmail.com",
@@ -326,13 +324,13 @@ export default {
 				smtp_server: "smtp.yandex.com",
 				smtp_port: 587,
 			},
-		}
+		};
 
-		const isNew = ref(false)
+		const isNew = ref(false);
 
-		const editingName = ref(false)
+		const editingName = ref(false);
 
-		const initialPassword = ref("")
+		const initialPassword = ref("");
 
 		const values = ref({
 			service: services.value[0].name,
@@ -343,9 +341,9 @@ export default {
 			enableOutgoing: true,
 			defaultIncoming: false,
 			defaultOutgoing: false,
-		})
+		});
 
-		const tempEmailAccountName = ref("")
+		const tempEmailAccountName = ref("");
 
 		const errors = {
 			"Error: frappe.client.set_value InvalidEmailCredentials":
@@ -353,7 +351,7 @@ export default {
 			"Error: frappe.client.insert ValidationError": "Validation Error.",
 			"Error: frappe.client.insert InvalidEmailCredentials":
 				"Invalid Email ID or Password.",
-		}
+		};
 
 		return {
 			services,
@@ -364,29 +362,29 @@ export default {
 			tempEmailAccountName,
 			initialPassword,
 			errors,
-		}
+		};
 	},
 	mounted() {
-		this.$event.emit("set-selected-setting", "Email Accounts")
-		this.$event.emit("show-top-panel-actions-settings", "Email Account")
+		this.$event.emit("set-selected-setting", "Email Accounts");
+		this.$event.emit("show-top-panel-actions-settings", "Email Account");
 
-		this.isNew = this.$route.name === "NewEmailAccount"
+		this.isNew = this.$route.name === "NewEmailAccount";
 
-		this.editingName = this.isNew
+		this.editingName = this.isNew;
 
 		if (this.isNew) {
-			this.setDefaultValues()
+			this.setDefaultValues();
 		} else {
-			this.$resources.getEmailAccount.fetch()
+			this.$resources.getEmailAccount.fetch();
 		}
 	},
 	methods: {
 		selectService(service) {
 			this.services.forEach((s) => {
-				s.selected = false
-			})
-			service.selected = true
-			this.values["service"] = service.name
+				s.selected = false;
+			});
+			service.selected = true;
+			this.values["service"] = service.name;
 		},
 		setDefaultValues() {
 			this.values = {
@@ -398,7 +396,7 @@ export default {
 				enableOutgoing: true,
 				defaultIncoming: false,
 				defaultOutgoing: false,
-			}
+			};
 		},
 		create() {
 			if (this.validateInputs()) {
@@ -428,7 +426,7 @@ export default {
 						smtp_port: 587,
 						...this.emailDefaults[this.values.service],
 					},
-				})
+				});
 			}
 		},
 		save() {
@@ -445,21 +443,21 @@ export default {
 						default_incoming: this.values.defaultIncoming,
 						default_outgoing: this.values.defaultOutgoing,
 					},
-				})
+				});
 			}
 		},
 		cancel() {
-			this.$router.go()
+			this.$router.go();
 		},
 		rename() {
 			return this.$resources.renameEmailAccount.submit({
 				doctype: "Email Account",
 				old_name: this.values.emailAccountName,
 				new_name: this.tempEmailAccountName,
-			})
+			});
 		},
 		validateInputs() {
-			return true
+			return true;
 		},
 	},
 	resources: {
@@ -476,12 +474,12 @@ export default {
 				},
 				onSuccess: (res) => {
 					if (res == 0) {
-						this.values.enableOutgoing = true
-						this.values.defaultOutgoing = true
+						this.values.enableOutgoing = true;
+						this.values.defaultOutgoing = true;
 					}
 				},
 				auto: true,
-			}
+			};
 		},
 		getEmailAccount() {
 			return {
@@ -492,7 +490,7 @@ export default {
 					fields: ["*"],
 				},
 				onSuccess: (data) => {
-					this.tempEmailAccountName = data.email_account_name
+					this.tempEmailAccountName = data.email_account_name;
 					this.values = {
 						emailAccountName: data.email_account_name,
 						emailId: data.email_id,
@@ -502,7 +500,7 @@ export default {
 						enableOutgoing: data.enable_outgoing ? true : false,
 						defaultIncoming: data.default_incoming ? true : false,
 						defaultOutgoing: data.default_outgoing ? true : false,
-					}
+					};
 				},
 				onError: (error) => {
 					this.$toast({
@@ -510,9 +508,9 @@ export default {
 						text: this.errors[error] || error,
 						icon: "x",
 						iconClasses: "text-red-500",
-					})
+					});
 				},
-			}
+			};
 		},
 		createNewEmailAccount() {
 			return {
@@ -522,11 +520,11 @@ export default {
 						title: "Email Account Created!!",
 						icon: "check",
 						iconClasses: "text-green-500",
-					})
-					this.$clearToasts()
+					});
+					this.$clearToasts();
 					this.$router.push({
 						name: "Emails",
-					})
+					});
 				},
 				onError: (error) => {
 					this.$toast({
@@ -534,29 +532,26 @@ export default {
 						text: this.errors[error] || error,
 						icon: "x",
 						iconClasses: "text-red-500",
-					})
+					});
 				},
-			}
+			};
 		},
 		updateEmailAccount() {
 			return {
 				url: "frappe.client.set_value",
 				onSuccess: () => {
-					if (
-						this.values.emailAccountName !=
-						this.tempEmailAccountName
-					) {
+					if (this.values.emailAccountName != this.tempEmailAccountName) {
 						this.$resources.renameEmailAccount.submit({
 							doctype: "Email Account",
 							old_name: this.values.emailAccountName,
 							new_name: this.tempEmailAccountName,
-						})
+						});
 					} else {
 						this.$toast({
 							title: "Email Account Updated.",
 							icon: "check",
 							iconClasses: "text-green-500",
-						})
+						});
 					}
 				},
 				onError: (error) => {
@@ -565,15 +560,15 @@ export default {
 						text: this.errors[error] || error,
 						icon: "x",
 						iconClasses: "text-red-500",
-					})
+					});
 				},
-			}
+			};
 		},
 		renameEmailAccount() {
 			return {
 				url: "frappe.client.rename_doc",
 				onSuccess: (data) => {
-					window.location.href = `/frappedesk/settings/emails/${data}`
+					window.location.href = `/frappedesk/settings/emails/${data}`;
 				},
 				onError: (error) => {
 					this.$toast({
@@ -581,10 +576,10 @@ export default {
 						text: this.errors[error] || error,
 						icon: "x",
 						iconClasses: "text-red-500",
-					})
+					});
 				},
-			}
+			};
 		},
 	},
-}
+};
 </script>
