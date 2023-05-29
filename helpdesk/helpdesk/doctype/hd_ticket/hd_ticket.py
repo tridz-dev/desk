@@ -19,6 +19,7 @@ from frappe.query_builder.functions import Count
 from frappe.realtime import get_website_room
 from frappe.utils import date_diff, get_datetime, now_datetime, time_diff_in_seconds
 from frappe.utils.user import is_website_user
+from email_rest.email_rest.api.send_ticket_reply import create_communication_via_email_api
 
 from helpdesk.helpdesk.doctype.hd_ticket_activity.hd_ticket_activity import (
 	log_ticket_activity,
@@ -393,107 +394,121 @@ class HDTicket(Document):
 		return f"{root_uri}/helpdesk/my-tickets/{self.name}"
 
 	@frappe.whitelist()
+	
 	def reply_via_agent(
 		self, message: str, cc: str = None, bcc: str = None, attachments: List[str] = []
 	):
-		skip_email_workflow = self.skip_email_workflow()
-		medium = "" if skip_email_workflow else "Email"
-		subject = f"Re: {self.subject} (#{self.name})"
-		sender = frappe.session.user
-		recipients = self.raised_by
-		sender_email = None if skip_email_workflow else self.sender_email()
-		last_communication = self.get_last_communication()
+		email_account = False
+		doc = frappe.db.get_list('Email Account',fields=['name','enable_outgoing'])
 
-		if last_communication:
-			cc = cc or last_communication.cc
-			bcc = bcc or last_communication.bcc
+		for i in doc:
+			if i['enable_outgoing']==1:
+				email_account=True
+		
+		if email_account==True:
 
-		if recipients == "Administrator":
-			admin_email = frappe.get_value("User", "Administrator", "email")
-			recipients = admin_email
+			skip_email_workflow = self.skip_email_workflow()
+			medium = "" if skip_email_workflow else "Email"
+			subject = f"Re: {self.subject} (#{self.name})"
+			sender = frappe.session.user
+			recipients = self.raised_by
+			sender_email = None if skip_email_workflow else self.sender_email()
+			last_communication = self.get_last_communication()
 
-		communication = frappe.get_doc(
-			{
-				"bcc": bcc,
-				"cc": cc,
-				"communication_medium": medium,
-				"communication_type": "Communication",
-				"content": message,
-				"doctype": "Communication",
-				"email_account": sender_email.name if sender_email else None,
-				"email_status": "Open",
-				"recipients": recipients,
-				"reference_doctype": "HD Ticket",
-				"reference_name": self.name,
-				"sender": sender,
-				"sent_or_received": "Sent",
-				"status": "Linked",
-				"subject": subject,
-			}
-		)
+			if last_communication:
+				cc = cc or last_communication.cc
+				bcc = bcc or last_communication.bcc
 
-		communication.insert(ignore_permissions=True)
+			if recipients == "Administrator":
+				admin_email = frappe.get_value("User", "Administrator", "email")
+				recipients = admin_email
 
-		# Mark status, unconditionally.
-		self.reload()
-		self.status = "Replied"
-		self.save()
-
-		if skip_email_workflow:
-			return
-
-		if not sender_email:
-			frappe.throw(_("Can not send email. No sender email set up!"))
-
-		_attachments = []
-
-		for attachment in attachments:
-			file_doc = frappe.get_doc("File", attachment)
-			file_doc.attached_to_name = communication.name
-			file_doc.attached_to_doctype = "Communication"
-			file_doc.save(ignore_permissions=True)
-			_attachments.append({"file_url": file_doc.file_url})
-
-		reply_to_email = sender_email.email_id
-		template = (
-			"new_reply_on_customer_portal_notification"
-			if self.via_customer_portal
-			else None
-		)
-		args = {
-			"message": message,
-			"portal_link": self.portal_uri,
-			"ticket_id": self.name,
-		}
-		send_delayed = True
-		send_now = False
-
-		if self.instantly_send_email():
-			send_delayed = False
-			send_now = True
-
-		try:
-			frappe.sendmail(
-				args=args,
-				attachments=_attachments,
-				bcc=bcc,
-				cc=cc,
-				communication=communication.name,
-				delayed=send_delayed,
-				expose_recipients="header",
-				message=message,
-				now=send_now,
-				recipients=recipients,
-				reference_doctype="HD Ticket",
-				reference_name=self.name,
-				reply_to=reply_to_email,
-				sender=reply_to_email,
-				subject=subject,
-				template=template,
-				with_container=False,
+			communication = frappe.get_doc(
+				{
+					"bcc": bcc,
+					"cc": cc,
+					"communication_medium": medium,
+					"communication_type": "Communication",
+					"content": message,
+					"doctype": "Communication",
+					"email_account": sender_email.name if sender_email else None,
+					"email_status": "Open",
+					"recipients": recipients,
+					"reference_doctype": "HD Ticket",
+					"reference_name": self.name,
+					"sender": sender,
+					"sent_or_received": "Sent",
+					"status": "Linked",
+					"subject": subject,
+				}
 			)
-		except Exception as e:
-			frappe.throw(_(e))
+
+			communication.insert(ignore_permissions=True)
+
+			# Mark status, unconditionally.
+			self.reload()
+			self.status = "Replied"
+			self.save()
+
+			if skip_email_workflow:
+				return
+
+			if not sender_email:
+				frappe.throw(_("Can not send email. No sender email set up!"))
+
+			_attachments = []
+
+			for attachment in attachments:
+				file_doc = frappe.get_doc("File", attachment)
+				file_doc.attached_to_name = communication.name
+				file_doc.attached_to_doctype = "Communication"
+				file_doc.save(ignore_permissions=True)
+				_attachments.append({"file_url": file_doc.file_url})
+
+			reply_to_email = sender_email.email_id
+			template = (
+				"new_reply_on_customer_portal_notification"
+				if self.via_customer_portal
+				else None
+			)
+			args = {
+				"message": message,
+				"portal_link": self.portal_uri,
+				"ticket_id": self.name,
+			}
+			send_delayed = True
+			send_now = False
+
+			if self.instantly_send_email():
+				send_delayed = False
+				send_now = True
+
+			try:
+				frappe.sendmail(
+					args=args,
+					attachments=_attachments,
+					bcc=bcc,
+					cc=cc,
+					communication=communication.name,
+					delayed=send_delayed,
+					expose_recipients="header",
+					message=message,
+					now=send_now,
+					recipients=recipients,
+					reference_doctype="HD Ticket",
+					reference_name=self.name,
+					reply_to=reply_to_email,
+					sender=reply_to_email,
+					subject=subject,
+					template=template,
+					with_container=False,
+				)
+			except Exception as e:
+				frappe.throw(_(e))
+
+		else:
+			create_communication_via_email_api(ticket=self.name,message=message)
+
 
 	@frappe.whitelist()
 	def mark_seen(self):
